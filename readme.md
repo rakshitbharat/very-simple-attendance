@@ -1,13 +1,5 @@
 # Attendance System Project Overview
 
-## Project Setup
-
-1. **Create a New Project:**
-   - We will create a new project to manage employee attendance using a tool called Next.js.
-
-2. **Install Necessary Tools:**
-   - We will install some helper tools to make our project work efficiently, such as Axios for making requests and Material UI for user interfaces.
-
 ## Database Setup
 
 1. **Create a Database:**
