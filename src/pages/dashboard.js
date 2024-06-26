@@ -22,7 +22,7 @@ export default function Dashboard() {
 
   return (
     <div>
-      <h1>Welcome to your dashboard, {session.user.email}</h1>
+      <h1>22Welcome to your dashboard, {session.user.email}</h1>
       {/* Add dashboard content here */}
     </div>
   );

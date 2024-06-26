@@ -1,34 +1,36 @@
 import { useState } from "react";
-import { useSession } from "next-auth/react";
-import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setUser } from "../redux/authSlice";
+import { getAuthHeader, setUserData } from "../utils/auth";
 
 export default function PtpVerification() {
   const [ptp, setPtp] = useState("");
-  const { data: session } = useSession();
+  const dispatch = useDispatch();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
-        "/api/verify-ptp",
-        { ptp },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.data.valid) {
-        // Handle successful PTP verification (e.g., update UI, store new PTP)
-        console.log("New PTP:", response.data.newPtp);
+      const response = await fetch("/api/verify-ptp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: getAuthHeader(),
+        },
+        body: JSON.stringify({ ptp }),
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        dispatch(setUser(userData));
+        setUserData(userData);
+      } else {
+        // Handle error
+        console.error("PTP verification failed");
       }
     } catch (error) {
-      // Handle error (e.g., show error message)
-      console.error("PTP verification failed:", error);
+      console.error("Network error", error);
     }
   };
-
-  if (!session) return null;
 
   return (
     <form onSubmit={handleSubmit}>
