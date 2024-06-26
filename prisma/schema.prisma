@@ -8,18 +8,20 @@ datasource db {
 }
 
 model User {
-  id         Int         @id @default(autoincrement())
-  email      String      @unique
+  id         Int          @id @default(autoincrement())
+  email      String       @unique
   password   String
-  isAdmin    Boolean     @default(false)
+  is_admin   Boolean      @default(false)
   ptp        String?
-  attendances Attendance[]
+  Attendance Attendance[]
 }
 
 model Attendance {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  clockIn   DateTime
-  clockOut  DateTime?
+  id       Int       @id @default(autoincrement())
+  userId   Int
+  clockIn  DateTime
+  clockOut DateTime?
+  user     User      @relation(fields: [userId], references: [id])
+
+  @@index([userId], map: "Attendance_userId_fkey")
 }
