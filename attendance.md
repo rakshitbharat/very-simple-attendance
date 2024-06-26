@@ -1,94 +1,77 @@
-# Attendance System APIs
+# PTP (Permanent Time Password) System
 
 ## Overview
-This document outlines the APIs and logic for the attendance system, including PTP (Permanent Time Password) verification and clock-in/out functionality.
+The PTP (Permanent Time Password) is a crucial component of our attendance system, providing an additional layer of verification for user actions.
 
-## Authentication
-- All APIs require authentication header: `username|||password|||ptp`
-- Server verifies credentials and PTP for each request
-
-## PTP (Permanent Time Password)
-
-### PTP Characteristics
+## PTP Characteristics
 - 4-digit numeric code
 - Unique for each user
-- Generated and managed server-side
+- Remains valid until explicitly reset or changed
 
-### PTP Verification API
-- Endpoint: `POST /api/verify-ptp`
+## PTP Lifecycle
+
+### Initial Generation
+- Generated when a new user is created
+- Provided to the user through a secure channel (e.g., email or admin communication)
+
+### Storage
+- Stored in the user's record in the database
+- Stored on the client-side (e.g., localStorage) after successful verification
+
+### Verification Process
+1. User enters PTP during initial login or when required
+2. System compares entered PTP with the one stored in the database
+3. If match:
+   - PTP is considered valid
+   - Client stores PTP locally for future API calls
+4. If mismatch:
+   - User is prompted to re-enter PTP
+   - After multiple failures, user may need to request a PTP reset
+
+### Usage in API Calls
+- Included in the authentication header: `username|||password|||ptp`
+- Server verifies PTP along with username and password for each API call
+
+## PTP Validation API
+- Endpoint: `POST /api/validate-ptp`
 - Request Body: `{ ptp: string }`
 - Response:
-  - Success: `{ valid: true, newPtp: string }`
+  - Success: `{ valid: true, ptp: string }`
   - Failure: `{ valid: false, message: string }`
 
-### PTP Verification Logic
-1. Verify the provided PTP against the user's stored PTP
-2. If valid:
-   - Generate a new PTP
-   - Update user's PTP in the database
-   - Return new PTP to client
-3. If invalid:
-   - Return error message
+## PTP Reset Process
 
-### PTP Reset (Admin Only)
+### User-Initiated Reset
+- Users cannot reset their own PTP
+- Must request reset from an admin
+
+### Admin-Initiated Reset
 - Endpoint: `POST /api/admin/reset-ptp/:userId`
-- Response: `{ newPtp: string }`
-
-## Attendance Capture API
-
-### Single Endpoint for Clock In/Out
-- Endpoint: `POST /api/capture-attendance`
-- No request body needed (uses authentication header)
-- Response:
-  - Success: `{ action: 'clock_in' | 'clock_out', timestamp: string }`
-  - Failure: `{ error: string }`
-
-### Attendance Capture Logic
-1. Retrieve user's latest attendance record within the last 24 hours
-2. If no record or last record has clock_out:
-   - Create new attendance record with clock_in
-   - Return 'clock_in' action
-3. If last record has clock_in but no clock_out:
-   - Update record with clock_out
-   - Return 'clock_out' action
-4. Implement a cooldown period (e.g., 1 minute) to prevent rapid consecutive clock in/out
-
-## Get Current Status API
-- Endpoint: `GET /api/attendance-status`
-- Response: `{ status: 'checked_in' | 'checked_out', lastAction: string }`
-
-## Database Schema
-
-### Attendance Table
-| Column    | Type      | Description                    |
-|-----------|-----------|--------------------------------|
-| id        | Integer   | Primary Key                    |
-| user_id   | Integer   | Foreign Key to Users table     |
-| clock_in  | Timestamp | Time of clock in               |
-| clock_out | Timestamp | Time of clock out (nullable)   |
-
-## Error Handling
-- Return appropriate HTTP status codes (400 for client errors, 500 for server errors)
-- Provide descriptive error messages in the response body
-
-## Rate Limiting
-- Implement rate limiting to prevent abuse (e.g., max 5 requests per minute per user)
-
-## Logging
-- Log all attendance actions with user ID, action type, and timestamp
-- Store logs separately from the main attendance records for auditing purposes
-
-## Real-time Updates
-- After successful attendance capture, emit WebSocket event to update client in real-time
+- Generates a new PTP for the specified user
+- Returns new PTP to admin for communication to user
 
 ## Security Considerations
-- Validate and sanitize all input data
-- Ensure PTP is only valid for a single use
-- Implement server-side checks to prevent time manipulation
+- PTP is not a one-time password; it remains valid until changed
+- PTP adds an extra verification layer but doesn't replace proper authentication
+- Implement rate limiting on PTP validation attempts to prevent brute force attacks
 
-## Future Enhancements
-- Geolocation tracking for clock in/out
-- Support for different shift types
-- Integration with leave management system
+## Client-Side Handling
+- Store PTP locally after successful validation
+- Include stored PTP in all subsequent API calls
+- Clear stored PTP on logout or when server indicates it's invalid
 
-Note: This API design is for a POC. Production implementation would require additional security measures and optimizations.
+## Server-Side Handling
+- Validate PTP along with username and password for each authenticated request
+- Return clear error messages if PTP is invalid, prompting client to re-validate
+
+## Use Cases for PTP Re-entry
+1. First-time login on a new device
+2. After a logout (when local storage is cleared)
+3. When server indicates the current PTP is invalid
+4. After an admin-initiated PTP reset
+
+## PTP in Multi-Device Scenarios
+- PTP remains the same across all devices for a user
+- Successful login on a new device should store PTP locally on that device
+
+Note: While called "Permanent", the PTP can be changed through the reset process. It's permanent in the sense that it doesn't change automatically after use, unlike typical one-time passwords.
