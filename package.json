@@ -9,8 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@prisma/client": "^5.16.0",
+    "axios": "^1.7.2",
+    "next": "14.2.4",
+    "next-auth": "^4.24.7",
     "react": "^18",
-    "react-dom": "^18",
-    "next": "14.2.4"
+    "react-dom": "^18"
+  },
+  "devDependencies": {
+    "prisma": "^5.16.0"
   }
 }
