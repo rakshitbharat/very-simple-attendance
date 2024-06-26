@@ -1,11 +1,9 @@
 export function getAuthHeader() {
-  if (typeof window !== "undefined") {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (user) {
-      return `${user.email}|||${user.password}${
-        user.ptp ? "|||" + user.ptp : ""
-      }`;
-    }
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (user) {
+    return `${user.email}|||${user.password}${
+      user.ptp ? "|||" + user.ptp : ""
+    }`;
   }
   return null;
 }
