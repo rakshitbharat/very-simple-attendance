@@ -2,18 +2,18 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-COPY package.json yarn.lock* ./
-
-RUN chown -R node:node /app
+COPY --chown=node:node package.json yarn.lock* ./
 
 USER node
 
 RUN yarn install
 
-COPY . .
+COPY --chown=node:node . .
 
-COPY wait-for-db.sh .
+USER root
 
 RUN chmod +x wait-for-db.sh
+
+USER node
 
 CMD ["sh", "-c", "./wait-for-db.sh \"yarn dev\""]
