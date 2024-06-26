@@ -2,21 +2,14 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy package.json
-COPY package.json ./
+COPY package.json yarn.lock* ./
 
-# Copy yarn.lock if it exists
-COPY yarn.lock* ./
-
-# Install dependencies
 RUN yarn install
-
-RUN npx prisma generate
-
-RUN npx prisma migrate deploy
-
-RUN npx prisma db pull
 
 COPY . .
 
-CMD ["yarn", "dev"]
+COPY wait-for-db.sh .
+
+RUN chmod +x wait-for-db.sh
+
+CMD ["./wait-for-db.sh", "yarn", "dev"]
