@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   app:
@@ -20,13 +20,12 @@ services:
       - ./mysql_data:/var/lib/mysql
       - ./db:/docker-entrypoint-initdb.d
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
+  adminer:
+    image: adminer
     ports:
-      - "8080:80"
+      - "8080:8080"
     environment:
-      PMA_HOST: db
-      MYSQL_ROOT_PASSWORD: rootpassword
+      ADMINER_DEFAULT_SERVER: db
 
 volumes:
   mysql_data:
