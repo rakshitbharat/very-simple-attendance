@@ -11,6 +11,12 @@ COPY yarn.lock* ./
 # Install dependencies
 RUN yarn install
 
+RUN npx prisma generate
+
+RUN npx prisma migrate deploy
+
+RUN npx prisma db pull
+
 COPY . .
 
 CMD ["yarn", "dev"]
