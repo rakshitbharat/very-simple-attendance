@@ -1,14 +1,11 @@
-import { getSession } from "next-auth/react";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "./auth/[...nextauth]";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-function generatePTP() {
-  return Math.floor(1000 + Math.random() * 9000).toString();
-}
-
 export default async function handler(req, res) {
-  const session = await getSession({ req });
+  const session = await getServerSession(req, res, authOptions);
 
   if (!session) {
     return res.status(401).json({ error: "Unauthorized" });
@@ -23,7 +20,7 @@ export default async function handler(req, res) {
     });
 
     if (user && user.ptp === ptp) {
-      const newPtp = generatePTP();
+      const newPtp = Math.floor(1000 + Math.random() * 9000).toString();
       await prisma.user.update({
         where: { id: userId },
         data: { ptp: newPtp },
