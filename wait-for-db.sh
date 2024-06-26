@@ -2,6 +2,8 @@
 
 set -e
 
+yarn install
+
 until npx prisma migrate status > /dev/null 2>&1; do
   echo "Waiting for the database to be ready..."
   sleep 1
