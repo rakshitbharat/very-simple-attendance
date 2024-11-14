@@ -1,4 +1,4 @@
-# 🎯 Attendance System Pro
+# 🎯 Very Simple Attendance System
 
 [![GitHub License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/docker-ready-brightgreen.svg)](https://www.docker.com/)
