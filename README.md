@@ -6,7 +6,7 @@
 
 ## 📖 About
 
-Attendance System Pro is a modern, Docker-based attendance tracking solution that combines security with simplicity. Built for organizations that need reliable attendance tracking with device-specific verification.
+Very Simple Attendance System is a modern, Docker-based attendance tracking solution that combines security with simplicity. Built for organizations that need reliable attendance tracking with device-specific verification.
 
 ### Why Choose This System?
 
