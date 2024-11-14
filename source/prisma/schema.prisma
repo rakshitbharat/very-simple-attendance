@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model attendance {
+  id         Int       @id @default(autoincrement())
+  user_id    Int
+  clock_in   DateTime  @db.Timestamp(0)
+  clock_out  DateTime? @db.Timestamp(0)
+  created_at DateTime? @default(now()) @db.Timestamp(0)
+  updated_at DateTime? @default(now()) @db.Timestamp(0)
+  users      users     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "attendance_ibfk_1")
+
+  @@index([user_id], map: "user_id")
+}
+
+model users {
+  id           Int          @id @default(autoincrement())
+  email        String       @unique(map: "email") @db.VarChar(255)
+  password     String       @db.VarChar(255)
+  name         String?      @db.VarChar(255)
+  is_admin     Boolean?     @default(false)
+  ptp          String?      @db.VarChar(4)
+  ptp_verified Boolean?     @default(false)
+  created_at   DateTime?    @default(now()) @db.Timestamp(0)
+  updated_at   DateTime?    @default(now()) @db.Timestamp(0)
+  attendance   attendance[]
+}

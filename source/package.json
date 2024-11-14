@@ -1,0 +1,67 @@
+{
+  "name": "nextjs",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "reset-password": "node scripts/reset-password.js",
+    "init-db": "node scripts/init-db.js"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "3.9.1",
+    "@prisma/client": "5.22.0",
+    "@radix-ui/react-alert-dialog": "^1.0.5",
+    "@radix-ui/react-label": "2.1.0",
+    "@radix-ui/react-select": "^1.2.2",
+    "bcryptjs": "2.4.3",
+    "chalk": "^4.1.2",
+    "chart.js": "^4.4.1",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "dotenv": "16.3.1",
+    "framer-motion": "10.18.0",
+    "inquirer": "^12.1.0",
+    "jose": "^5.1.3",
+    "lucide-react": "0.300.0",
+    "mysql2": "^3.11.4",
+    "next": "13.5.7",
+    "next-themes": "^0.2.1",
+    "react": "18.2.0",
+    "react-calendar": "^4.6.1",
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "18.2.0",
+    "react-hook-form": "^7.49.2",
+    "react-icons": "^4.12.0",
+    "sonner": "1.7.0",
+    "table": "^6.8.2",
+    "tailwind-merge": "^2.1.0",
+    "tailwindcss": "^3.3.0",
+    "typescript": "5.2.2",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/next": "^9.0.0",
+    "@types/node": "^20.17.6",
+    "@types/react": "18.3.12",
+    "@types/react-calendar": "^4.1.0",
+    "@types/react-dom": "18.3.1",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.0.0",
+    "eslint-config-next": "13.5.7",
+    "postcss": "^8.4.31",
+    "prisma": "5.22.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "config": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "type": "module"
+}
