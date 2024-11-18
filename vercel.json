@@ -14,5 +14,8 @@
   ],
   "buildCommand": "cd source && npm install && npm run build",
   "installCommand": "cd source && npm install",
-  "outputDirectory": "source/.next"
+  "outputDirectory": "source/.next",
+  "env": {
+    "NODE_ENV": "production"
+  }
 }
