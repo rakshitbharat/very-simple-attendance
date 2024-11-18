@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { validateAuth } from "@/lib/auth";
-import { db } from "@/lib/mysql";
+import { db } from "@/lib/db";
 
 export async function GET(req: Request) {
   try {
@@ -43,7 +43,7 @@ export async function GET(req: Request) {
         DATE(clock_in) as date,
         COUNT(*) as count
       FROM attendance
-      WHERE clock_in >= ?
+      WHERE clock_in >= $1
       GROUP BY DATE(clock_in)
       ORDER BY date DESC
       LIMIT 7`,

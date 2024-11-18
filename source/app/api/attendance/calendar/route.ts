@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { validateAuth } from "@/lib/auth";
-import { db } from "@/lib/mysql";
+import { db } from "@/lib/db";
 
 export async function GET(req: Request) {
   try {
@@ -30,19 +30,14 @@ export async function GET(req: Request) {
     const attendance = await db.query(
       `SELECT clock_in 
        FROM attendance 
-       WHERE user_id = ? 
-       AND clock_in >= ? 
-       AND clock_in <= ?
+       WHERE user_id = $1 
+       AND clock_in >= $2 
+       AND clock_in <= $3
        ORDER BY clock_in ASC`,
       [user.id, startOfMonth, endOfMonth]
     );
 
-    // Ensure attendance is an array
-    const attendanceArray = Array.isArray(attendance)
-      ? attendance
-      : [attendance];
-
-    const dates = attendanceArray.map((record: any) => record.clock_in);
+    const dates = attendance.map((record: any) => record.clock_in);
 
     return NextResponse.json({ dates });
   } catch (error) {

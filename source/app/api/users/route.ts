@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import { headers } from "next/headers";
 import { validateAuth } from "@/lib/auth";
-import { db } from "@/lib/mysql";
+import { db } from "@/lib/db";
 
 export async function GET(request: Request) {
   try {
@@ -11,7 +10,6 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Use the existing query from the admin users endpoint
     const users = await db.query(
       "SELECT id, email, name, is_admin, ptp, ptp_verified, created_at as lastLogin FROM users"
     );
@@ -41,7 +39,6 @@ export async function GET(request: Request) {
   }
 }
 
-// Add PUT endpoint for updating user status
 export async function PUT(request: Request) {
   try {
     const user = await validateAuth();
@@ -52,7 +49,7 @@ export async function PUT(request: Request) {
 
     const { userId, status } = await request.json();
 
-    await db.query("UPDATE users SET ptp_verified = ? WHERE id = ?", [
+    await db.query("UPDATE users SET ptp_verified = $1 WHERE id = $2", [
       status === "active",
       userId,
     ]);

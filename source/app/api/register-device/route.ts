@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/mysql";
+import { db } from "@/lib/db";
 import crypto from "crypto";
 
 export async function POST(request: Request) {
@@ -15,10 +15,10 @@ export async function POST(request: Request) {
 
     // For admin users
     if (userData?.role === "admin") {
-      const adminResult = (await db.query(
-        "SELECT id, ptp FROM users WHERE email = ?",
+      const adminResult = await db.query(
+        "SELECT id, ptp FROM users WHERE email = $1",
         [email]
-      )) as any[];
+      );
 
       const adminUser = adminResult[0];
 
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
         },
         deviceToken,
         lastLogin: new Date().toISOString(),
-        ptp: adminUser.ptp, // Include admin's current PTP
+        ptp: adminUser.ptp,
       };
 
       return NextResponse.json({
@@ -51,10 +51,10 @@ export async function POST(request: Request) {
     }
 
     // For non-admin users
-    const userResult = (await db.query(
-      "SELECT id, ptp, ptp_verified FROM users WHERE email = ?",
+    const userResult = await db.query(
+      "SELECT id, ptp, ptp_verified FROM users WHERE email = $1",
       [email]
-    )) as any[];
+    );
 
     const user = userResult[0];
 
@@ -67,7 +67,6 @@ export async function POST(request: Request) {
 
     // First time PTP verification
     if (!user.ptp_verified) {
-      // Check if PTP matches (4 digits)
       if (
         !deviceInfo.ptpNumber ||
         deviceInfo.ptpNumber.length !== 4 ||
@@ -79,16 +78,13 @@ export async function POST(request: Request) {
         );
       }
 
-      // Generate new PTP after successful verification
       const newPtp = Math.floor(1000 + Math.random() * 9000).toString();
 
-      // Update user's PTP and verification status
       await db.query(
-        "UPDATE users SET ptp = ?, ptp_verified = TRUE WHERE id = ?",
+        "UPDATE users SET ptp = $1, ptp_verified = TRUE WHERE id = $2",
         [newPtp, user.id]
       );
 
-      // Store the new PTP in the response
       const userDataToStore = {
         email,
         role: userData?.role || "user",
@@ -107,7 +103,6 @@ export async function POST(request: Request) {
         user: userDataToStore,
       });
     } else {
-      // Subsequent verifications - verify against current PTP
       if (deviceInfo.ptpNumber !== user.ptp) {
         return NextResponse.json(
           { success: false, error: "Invalid PTP number" },
@@ -124,7 +119,7 @@ export async function POST(request: Request) {
         },
         deviceToken: crypto.randomUUID(),
         lastLogin: new Date().toISOString(),
-        ptp: user.ptp, // Keep the same PTP
+        ptp: user.ptp,
       };
 
       return NextResponse.json({

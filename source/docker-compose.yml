@@ -7,12 +7,12 @@ services:
       - "3000:3000"
     environment:
       - DB_HOST=db
-      - DB_USER=root
+      - DB_USER=postgres
       - DB_PASSWORD=password
       - DB_NAME=attendance_system
       - ADMIN_EMAIL=admin@admin.com
       - ADMIN_PASSWORD=admin123
-      - DATABASE_URL=mysql://root:password@db:3306/attendance_system
+      - DATABASE_URL=postgresql://postgres:password@db:5432/attendance_system
       - JWT_SECRET=K9#mP4$nQ7*vX3jR5@fB1wZ8cA6&hL2yE8%tM5^uN9+gV4kD7!sW3xC9bH4p
     volumes:
       - .:/app
@@ -25,27 +25,18 @@ services:
       - app-network
 
   db:
-    image: mysql:8.0
+    image: postgres:15
     environment:
-      - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=attendance_system
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=attendance_system
     volumes:
-      - mysql_data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
-      - "3306:3306"
+      - "5432:5432"
     healthcheck:
-      test:
-        [
-          "CMD",
-          "mysqladmin",
-          "ping",
-          "-h",
-          "localhost",
-          "-u",
-          "root",
-          "-p$$MYSQL_ROOT_PASSWORD",
-        ]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -54,7 +45,7 @@ services:
       - app-network
 
 volumes:
-  mysql_data:
+  postgres_data:
 networks:
   app-network:
     driver: bridge

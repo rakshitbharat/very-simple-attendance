@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/mysql";
+import { db } from "@/lib/db";
 import { generatePTP } from "@/lib/auth";
 
 export async function POST(
@@ -13,10 +13,12 @@ export async function POST(
     }
 
     // Check if user is admin
-    const [adminUser] = await db.query(
-      "SELECT id, is_admin FROM users WHERE email = ?",
+    const adminUsers = await db.query(
+      "SELECT id, is_admin FROM users WHERE email = $1",
       [email]
     );
+
+    const adminUser = adminUsers[0];
 
     if (!adminUser?.is_admin) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -26,10 +28,12 @@ export async function POST(
     const newPtp = await generatePTP();
 
     // Get user data
-    const [user] = await db.query(
-      "SELECT email, name FROM users WHERE id = ?",
+    const users = await db.query(
+      "SELECT email, name FROM users WHERE id = $1",
       [params.id]
     );
+
+    const user = users[0];
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -37,7 +41,7 @@ export async function POST(
 
     // Update user's PTP
     await db.query(
-      "UPDATE users SET ptp = ?, ptp_verified = FALSE WHERE id = ?",
+      "UPDATE users SET ptp = $1, ptp_verified = FALSE WHERE id = $2",
       [newPtp, params.id]
     );
 

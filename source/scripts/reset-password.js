@@ -1,4 +1,4 @@
-import mysql from "mysql2/promise";
+import { Pool } from "pg";
 import inquirer from "inquirer";
 import { table } from "table";
 import chalk from "chalk";
@@ -6,25 +6,26 @@ import chalk from "chalk";
 // Database configuration
 const dbConfig = {
   host: process.env.DB_HOST || "localhost",
-  user: process.env.DB_USER || "root",
+  user: process.env.DB_USER || "postgres",
   password: process.env.DB_PASSWORD || "",
-  database: process.env.DB_NAME || "attendance_db",
+  database: process.env.DB_NAME || "attendance_system",
 };
 
 async function connectToDatabase() {
   try {
-    const connection = await mysql.createConnection(dbConfig);
+    const pool = new Pool(dbConfig);
     console.log(chalk.green("✓ Connected to database successfully"));
-    return connection;
+    return pool;
   } catch (error) {
     console.error(chalk.red("Error connecting to database:"), error);
     process.exit(1);
   }
 }
 
-async function displayUsers(connection) {
+async function displayUsers(pool) {
   try {
-    const [rows] = await connection.execute("SELECT id, email FROM users");
+    const result = await pool.query("SELECT id, email FROM users");
+    const rows = result.rows;
 
     if (rows.length === 0) {
       console.log(chalk.yellow("No users found in the database."));
@@ -51,19 +52,20 @@ function generatePTP() {
   return String(Math.floor(1000 + Math.random() * 9000));
 }
 
-async function resetPassword(connection, userId, newPassword) {
+async function resetPassword(pool, userId, newPassword) {
   try {
-    const [userRows] = await connection.execute(
-      "SELECT email FROM users WHERE id = ?",
-      [userId]
-    );
+    const result = await pool.query("SELECT email FROM users WHERE id = $1", [
+      userId,
+    ]);
+    const rows = result.rows;
 
     const ptp = generatePTP();
 
-    await connection.execute(
-      "UPDATE users SET password = ?, ptp = ? WHERE id = ?",
-      [newPassword, ptp, userId]
-    );
+    await pool.query("UPDATE users SET password = $1, ptp = $2 WHERE id = $3", [
+      newPassword,
+      ptp,
+      userId,
+    ]);
 
     console.log(chalk.green("✓ Password reset successfully"));
     console.log(chalk.blue("You can now log in to the web interface"));
@@ -75,12 +77,12 @@ async function resetPassword(connection, userId, newPassword) {
   }
 }
 
-async function createUser(connection, email, password) {
+async function createUser(pool, email, password) {
   try {
     const ptp = generatePTP();
 
-    await connection.execute(
-      "INSERT INTO users (email, password, ptp) VALUES (?, ?, ?)",
+    await pool.query(
+      "INSERT INTO users (email, password, ptp) VALUES ($1, $2, $3)",
       [email, password, ptp]
     );
 
@@ -89,7 +91,7 @@ async function createUser(connection, email, password) {
     console.log(chalk.yellow("\nPTP (4-digit code):"));
     console.log(chalk.yellow(ptp));
   } catch (error) {
-    if (error.code === "ER_DUP_ENTRY") {
+    if (error.code === "23505") {
       console.error(chalk.red("Error: Email already exists"));
     } else {
       console.error(chalk.red("Error creating user:"), error);
@@ -98,11 +100,11 @@ async function createUser(connection, email, password) {
   }
 }
 
-async function setupDatabase(connection) {
+async function setupDatabase(pool) {
   try {
     // Modify PTP column to be exactly 4 characters
-    await connection.execute(`
-      ALTER TABLE users MODIFY COLUMN ptp CHAR(4)
+    await pool.query(`
+      ALTER TABLE users ALTER COLUMN ptp TYPE CHAR(4)
     `);
     console.log(chalk.green("✓ Database schema updated successfully"));
   } catch (error) {
@@ -114,11 +116,11 @@ async function setupDatabase(connection) {
 }
 
 async function main() {
-  let connection;
+  let pool;
 
   try {
-    connection = await connectToDatabase();
-    await setupDatabase(connection);
+    pool = await connectToDatabase();
+    await setupDatabase(pool);
 
     const { action } = await inquirer.prompt([
       {
@@ -159,9 +161,9 @@ async function main() {
         },
       ]);
 
-      await createUser(connection, email, password);
+      await createUser(pool, email, password);
     } else {
-      const users = await displayUsers(connection);
+      const users = await displayUsers(pool);
 
       if (users.length === 0) {
         return;
@@ -193,14 +195,14 @@ async function main() {
         },
       ]);
 
-      await resetPassword(connection, userId, newPassword);
+      await resetPassword(pool, userId, newPassword);
     }
   } catch (error) {
     console.error(chalk.red("An error occurred:"), error);
     process.exit(1);
   } finally {
-    if (connection) {
-      await connection.end();
+    if (pool) {
+      await pool.end();
       console.log(chalk.blue("Database connection closed"));
     }
   }

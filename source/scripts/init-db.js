@@ -1,9 +1,9 @@
 require("dotenv").config();
-const mysql = require("mysql2/promise");
+const { Pool } = require("pg");
 
 async function main() {
   try {
-    const connection = await mysql.createConnection({
+    const pool = new Pool({
       host: process.env.DB_HOST,
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
@@ -13,8 +13,9 @@ async function main() {
     console.log("Connected to database successfully");
 
     // Add your database initialization logic here
+    await pool.query("SELECT NOW()");
 
-    await connection.end();
+    await pool.end();
     console.log("Database initialization completed");
   } catch (error) {
     console.error("Database initialization failed:", error);

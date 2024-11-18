@@ -1,21 +1,20 @@
 import { NextResponse } from "next/server";
 import { validateAuth } from "@/lib/auth";
-import { db } from "@/lib/mysql";
+import { db } from "@/lib/db";
 
 export async function GET(request: Request) {
   try {
-    // Get email from headers
     const email = request.headers.get("x-user-email");
     if (!email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // First check if user is admin and get user id
-    const [userRows] = await db.query(
-      `SELECT id, is_admin FROM users WHERE email = ?`,
+    const userRows = await db.query(
+      `SELECT id, is_admin FROM users WHERE email = $1`,
       [email]
     );
-    const user = Array.isArray(userRows) ? userRows[0] : userRows;
+    const user = userRows[0];
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 401 });
@@ -35,16 +34,17 @@ export async function GET(request: Request) {
     }
 
     // Get the user's latest attendance record using user_id
-    const [record] = await db.query(
+    const records = await db.query(
       `SELECT clock_in, clock_out 
        FROM attendance 
-       WHERE user_id = ? 
-       AND DATE(created_at) = CURRENT_DATE()
+       WHERE user_id = $1 
+       AND DATE(created_at) = CURRENT_DATE
        ORDER BY id DESC 
        LIMIT 1`,
       [user.id]
     );
 
+    const record = records[0];
     const isClockedIn = record && !record.clock_out;
     const lastAction = record ? record.clock_out || record.clock_in : null;
 

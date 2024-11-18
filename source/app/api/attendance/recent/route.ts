@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { json } from "@/lib/json-response";
 import { validateAuth } from "@/lib/auth";
-import { db } from "@/lib/mysql";
+import { db } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   try {
@@ -20,17 +20,13 @@ export async function GET(req: NextRequest) {
 
     const recentActivity = await db.query(
       `SELECT * FROM attendance 
-       WHERE user_id = ? 
+       WHERE user_id = $1 
        ORDER BY clock_in DESC 
        LIMIT 5`,
       [user.id]
     );
 
-    const activityArray = Array.isArray(recentActivity)
-      ? recentActivity
-      : [recentActivity];
-
-    const formattedActivity = activityArray.map((activity: any) => ({
+    const formattedActivity = recentActivity.map((activity: any) => ({
       id: activity.id,
       clockIn: activity.clock_in,
       clockOut: activity.clock_out,

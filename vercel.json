@@ -16,6 +16,7 @@
   "installCommand": "cd source && npm install",
   "outputDirectory": "source/.next",
   "env": {
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "DATABASE_URL": "postgresql://user:password@your-postgres-host:5432/attendance_system"
   }
 }

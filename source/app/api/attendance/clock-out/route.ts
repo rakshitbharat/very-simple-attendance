@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { validateAuth } from "@/lib/auth";
-import { db } from "@/lib/mysql";
+import { db } from "@/lib/db";
 
 export async function POST(request: Request) {
   try {
@@ -17,14 +17,12 @@ export async function POST(request: Request) {
     }
 
     // Find the user's active attendance record
-    const [activeRecords] = await db.query(
-      "SELECT id FROM attendance WHERE user_id = ? AND clock_out IS NULL LIMIT 1",
+    const activeRecords = await db.query(
+      "SELECT id FROM attendance WHERE user_id = $1 AND clock_out IS NULL LIMIT 1",
       [user.id]
     );
 
-    const activeRecord = Array.isArray(activeRecords)
-      ? activeRecords[0]
-      : activeRecords;
+    const activeRecord = activeRecords[0];
 
     if (!activeRecord) {
       return NextResponse.json(
@@ -35,7 +33,7 @@ export async function POST(request: Request) {
 
     // Update the record with clock out time
     await db.query(
-      "UPDATE attendance SET clock_out = CURRENT_TIMESTAMP WHERE id = ?",
+      "UPDATE attendance SET clock_out = CURRENT_TIMESTAMP WHERE id = $1",
       [activeRecord.id]
     );
 

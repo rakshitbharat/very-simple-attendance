@@ -1,4 +1,11 @@
-import pool from "./mysql";
+import { Pool } from "pg";
+
+const pool = new Pool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+});
 
 export interface User {
   id: number;
@@ -11,28 +18,25 @@ export interface User {
 
 export async function validateAuth(email: string, ptp?: string) {
   try {
-    console.log("Validating auth for:", email, "PTP:", ptp); // Debug log
+    console.log("Validating auth for:", email, "PTP:", ptp);
 
-    // Get fresh user data from database
-    const [rows] = await pool.query(
+    const result = await pool.query(
       `SELECT id, email, name, is_admin, ptp, ptp_verified 
        FROM users 
-       WHERE email = ?`,
+       WHERE email = $1`,
       [email]
     );
 
-    const user = Array.isArray(rows) ? rows[0] : rows;
+    const user = result.rows[0];
 
     if (!user) {
       console.log("No user found in database");
       return null;
     }
 
-    // For non-admin users, verify PTP matches
     if (!user.is_admin) {
       if (!ptp || ptp !== user.ptp) {
         console.log("PTP mismatch or missing - authentication failed");
-        console.log("Expected PTP:", user.ptp, "Got PTP:", ptp);
         return null;
       }
     }

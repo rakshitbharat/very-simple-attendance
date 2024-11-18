@@ -2,10 +2,10 @@ import pool from "../lib/db";
 
 async function testConnection() {
   try {
-    const [rows] = await pool.execute("SELECT * FROM users WHERE email = ?", [
+    const result = await pool.query("SELECT * FROM users WHERE email = $1", [
       "admin@admin.com",
     ]);
-    console.log("Test query result:", rows);
+    console.log("Test query result:", result.rows);
   } catch (error) {
     console.error("Database test failed:", error);
   } finally {

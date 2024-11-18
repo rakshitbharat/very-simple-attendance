@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/mysql";
+import { db } from "@/lib/db";
 import { validateAuth } from "@/lib/auth";
-import { RowDataPacket } from "mysql2";
 
-interface ActivityRecord extends RowDataPacket {
+interface ActivityRecord {
   id: number;
   clock_in: Date;
   clock_out: Date | null;
@@ -21,14 +20,14 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await validateAuth(userEmail || "", userPTP || "");
+    const user = await validateAuth(userEmail, userPTP || "");
 
     if (!user?.is_admin) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Get recent activity with user details
-    const recentActivity = await db.query<ActivityRecord[]>(`
+    const recentActivity = await db.query(`
       SELECT 
         a.id,
         a.clock_in,
@@ -42,17 +41,19 @@ export async function GET(req: Request) {
     `);
 
     // Format the data
-    const formattedActivity = recentActivity.map((activity) => ({
-      id: activity.id,
-      userName: activity.user_name || "Unknown User",
-      userEmail: activity.user_email,
-      clockIn: activity.clock_in,
-      clockOut: activity.clock_out,
-      status: activity.clock_out ? "Completed" : "Active",
-      duration: activity.clock_out
-        ? calculateDuration(activity.clock_in, activity.clock_out)
-        : null,
-    }));
+    const formattedActivity = recentActivity.map(
+      (activity: ActivityRecord) => ({
+        id: activity.id,
+        userName: activity.user_name || "Unknown User",
+        userEmail: activity.user_email,
+        clockIn: activity.clock_in,
+        clockOut: activity.clock_out,
+        status: activity.clock_out ? "Completed" : "Active",
+        duration: activity.clock_out
+          ? calculateDuration(activity.clock_in, activity.clock_out)
+          : null,
+      })
+    );
 
     return NextResponse.json(formattedActivity);
   } catch (error) {

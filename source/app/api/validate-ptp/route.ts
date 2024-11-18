@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/mysql";
+import { db } from "@/lib/db";
 
 export async function POST(request: Request) {
   try {
@@ -13,9 +13,11 @@ export async function POST(request: Request) {
     }
 
     // Get user and verify current PTP
-    const [user] = await db.query("SELECT id, ptp FROM users WHERE email = ?", [
+    const users = await db.query("SELECT id, ptp FROM users WHERE email = $1", [
       email,
     ]);
+
+    const user = users[0];
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -30,7 +32,10 @@ export async function POST(request: Request) {
     const newPtp = Math.floor(1000 + Math.random() * 9000).toString();
 
     // Update user's PTP
-    await db.query("UPDATE users SET ptp = ? WHERE id = ?", [newPtp, user.id]);
+    await db.query("UPDATE users SET ptp = $1 WHERE id = $2", [
+      newPtp,
+      user.id,
+    ]);
 
     return NextResponse.json({
       success: true,
