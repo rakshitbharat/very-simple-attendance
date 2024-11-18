@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "bun --bun next dev",
+    "build": "bun --bun next build",
+    "start": "bun --bun next start",
+    "lint": "bun --bun next lint",
     "reset-password": "node scripts/reset-password.js",
     "init-db": "node scripts/init-db.js"
   },
@@ -58,7 +59,8 @@
   },
   "engines": {
     "node": ">=18.0.0",
-    "npm": ">=9.0.0"
+    "npm": ">=9.0.0",
+    "bun": ">=1.0.0"
   },
   "config": {
     "registry": "https://registry.npmjs.org/"

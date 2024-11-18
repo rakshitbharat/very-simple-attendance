@@ -11,6 +11,17 @@ const nextConfig = {
   experimental: {
     serverActions: true,
   },
+  output: "standalone",
+  // Optimize for Bun
+  swcMinify: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
+  },
+  poweredByHeader: false,
+  compress: true,
+  generateEtags: true,
+  productionBrowserSourceMaps: false,
+  reactStrictMode: true,
 };
 
 module.exports = nextConfig;
