@@ -11,7 +11,7 @@ const nextConfig = {
   experimental: {
     serverActions: true,
   },
-  output: "standalone",
+  output: process.env.BUILD_STANDALONE === "true" ? "standalone" : undefined,
   // Optimize for Bun
   swcMinify: true,
   compiler: {
