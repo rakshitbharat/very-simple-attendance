@@ -12,7 +12,7 @@
       "dest": "source/$1"
     }
   ],
-  "buildCommand": "cd source && npm install && npm run build",
+  "buildCommand": "cd source && npm install && npx prisma generate && npm run build",
   "installCommand": "cd source && npm install",
   "outputDirectory": "source/.next",
   "env": {

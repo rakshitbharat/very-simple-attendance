@@ -1,25 +1,26 @@
-import mysql from "mysql2/promise";
-import { PoolOptions, Pool } from "mysql2/promise";
+import { Pool, PoolConfig } from "pg";
+import { config } from "dotenv";
 
-const poolConfig: PoolOptions = {
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
+config(); // Load environment variables
+
+const poolConfig: PoolConfig = {
+  connectionString: process.env.POSTGRES_PRISMA_URL,
+  ssl: {
+    rejectUnauthorized: false, // Required for NeonDB
+  },
+  max: 10,
+  idleTimeoutMillis: 30000,
 };
 
-const pool: Pool = mysql.createPool(poolConfig);
+const pool = new Pool(poolConfig);
 
 // Function to test connection with retries
 async function testConnection(retries = 5, delay = 5000) {
   for (let i = 0; i < retries; i++) {
     try {
-      const connection = await pool.getConnection();
+      const client = await pool.connect();
       console.log("Database connected successfully");
-      connection.release();
+      client.release();
       return true;
     } catch (err) {
       console.error(`Connection attempt ${i + 1} failed:`, err);
@@ -39,9 +40,9 @@ testConnection().catch((err) => {
 });
 
 export const db = {
-  query: async (sql: string, values: any[] = []) => {
-    const [rows] = await pool.execute(sql, values);
-    return rows;
+  query: async (text: string, params?: any[]) => {
+    const result = await pool.query(text, params);
+    return result.rows;
   },
 };
 
