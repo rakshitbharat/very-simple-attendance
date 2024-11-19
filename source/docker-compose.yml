@@ -35,16 +35,8 @@ services:
       - NEXTAUTH_SECRET=your-secret-key
       - NEXTAUTH_URL=http://localhost:3000
     volumes:
-      - ./node_modules:/app/node_modules
-      - ./.next:/app/.next
-      - ./public:/app/public
-      - ./app:/app/app
-      - ./components:/app/components
-      - ./lib:/app/lib
-      - ./styles:/app/styles
-      - ./types:/app/types
-      - ./prisma:/app/prisma
-      - ./scripts:/app/scripts
+      - .:/app
+      - /app/node_modules
     depends_on:
       db:
         condition: service_healthy

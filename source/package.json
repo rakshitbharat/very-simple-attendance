@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "reset-password": "node scripts/reset-password.js",
+    "reset-password": "node scripts/reset-password.ts",
     "init-db": "node scripts/init-db.js",
     "vercel-build": "next build",
     "wait-db": "ts-node scripts/wait-for-db.ts",
