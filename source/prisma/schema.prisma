@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  password     String
+  name         String?
+  is_admin     Boolean   @default(false)
+  ptp          String?   @db.Char(4)
+  ptp_verified Boolean   @default(false)
+  archived     Boolean   @default(false)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  records      AttendanceRecord[]
+
+  @@map("users")
+}
+
+model AttendanceRecord {
+  id        Int       @id @default(autoincrement())
+  userId    Int       @map("user_id")
+  user      User      @relation(fields: [userId], references: [id])
+  clockIn   DateTime  @map("clock_in")
+  clockOut  DateTime? @map("clock_out")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@map("attendance")
+}
