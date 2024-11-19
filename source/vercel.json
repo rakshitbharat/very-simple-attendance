@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next",
+      "config": {
+        "buildCommand": "npx prisma generate && npx prisma db push --accept-data-loss && npx ts-node --project tsconfig.json scripts/init-db.ts && npm run build",
+        "installCommand": "npm install"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "$1"
+    }
+  ]
+}
