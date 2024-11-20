@@ -20,6 +20,7 @@ COPY postcss.config.js ./
 COPY tailwind.config.ts ./
 COPY tsconfig.json ./
 
+
 # Copy the rest of the application
 COPY . .
 
