@@ -4,8 +4,8 @@ FROM node:18-alpine AS builder
 # Set working directory
 WORKDIR /app
 
-# Install dependencies required for node-gyp and PostgreSQL client
-RUN apk add --no-cache python3 make g++ postgresql-client
+# Install dependencies required for node-gyp, PostgreSQL client, and OpenSSL
+RUN apk add --no-cache python3 make g++ postgresql-client openssl openssl-dev
 
 # Copy package files
 COPY package*.json ./
@@ -35,8 +35,8 @@ FROM node:18-alpine AS runner
 
 WORKDIR /app
 
-# Install PostgreSQL client
-RUN apk add --no-cache postgresql-client
+# Install PostgreSQL client and OpenSSL
+RUN apk add --no-cache postgresql-client openssl openssl-dev
 
 # Copy necessary files from builder
 COPY --from=builder /app/next.config.js ./
