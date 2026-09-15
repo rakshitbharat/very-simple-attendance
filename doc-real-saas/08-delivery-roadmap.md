@@ -10,7 +10,9 @@ The roadmap is evidence-driven. Dates should be assigned only after the discover
 - Choose first segment and geography
 - Observe current attendance and month-end workflows
 - Decide time, correction, admin, and data-retention policies
+- Define the intended PTP exchange and validate it with owners and employees
 - Test packaging and willingness to commit to a paid pilot
+- Decide the first credit earning and spending rules customers can easily predict
 - Create low-fidelity flows for owner and member
 
 **Exit:** at least several qualified pilot customers commit to trying the defined MVP, and open P0 decisions have owners.
@@ -21,8 +23,12 @@ The roadmap is evidence-driven. Dates should be assigned only after the discover
 
 - Agree product language, roles, states, and attendance policies
 - Design company setup, invitations, member access, and offboarding
+- Design single-company auto-open and multi-company selection
+- Design pending, approved, and revoked device experiences
+- Prototype PTP onboarding, delegated approval, and lost-device recovery
 - Design daily attendance, exception, correction, and reporting flows
 - Prototype subscription, member-limit, cancellation, and payment-problem states
+- Prototype credit balance, history, purchase, cost confirmation, insufficient-credit, reversal, and expiry experiences
 - Test the prototype with owners and employees
 - Write acceptance scenarios and content for every important failure state
 
@@ -33,6 +39,8 @@ The roadmap is evidence-driven. Dates should be assigned only after the discover
 **Goal:** make daily attendance reliable.
 
 - Mobile-first clock-in/out and current state
+- Per-device PTP onboarding and attendance permissions
+- Owner/admin device-management view
 - Reliable one-open-session rule
 - Organization time zone and overnight-session policy
 - Personal history
@@ -46,7 +54,7 @@ The roadmap is evidence-driven. Dates should be assigned only after the discover
 
 **Goal:** charge safely and support real pilot customers.
 
-- Plans, trials, checkout, billing management, payment updates, and access rules
+- Credit accounts and history, subscriptions, one-time packs, trials, checkout, billing management, payment updates, and access rules
 - Seat-limit behavior and grace/restriction states
 - Transactional email
 - Terms, privacy, retention, support, and incident procedures
@@ -59,7 +67,7 @@ The roadmap is evidence-driven. Dates should be assigned only after the discover
 
 **Goal:** prove activation, routine use, month-end value, and supportability.
 
-- Personally onboard a small cohort
+- Personally onboard a small cohort and observe the first-device and second-device journeys
 - Review failures and support requests weekly
 - Measure setup completion, clock success, corrections, exports, and conversion
 - Fix reliability and comprehension issues before expanding scope

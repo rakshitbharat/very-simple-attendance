@@ -4,28 +4,47 @@ Status: **proposed MVP**, awaiting discovery decisions.
 
 ## MVP outcome
 
-A company with 2–20 people can create an account, invite its team, record daily attendance, resolve mistakes transparently, and export a trustworthy monthly report under a paid or trial subscription.
+An owner can obtain credits, spend the required credits to create and manage a 2–20 person company, invite members who use personal Google accounts, approve each member device through PTP onboarding, and control which approved devices may record attendance.
 
 ## Functional scope
 
 ### Company setup
 
-- An owner creates one organization and verifies their email.
+- Every person signs in with their own personal Google account.
+- Creating a company requires the defined credit amount or a credit-backed trial/grant.
+- The creator becomes the company owner and controls the subscription.
 - The owner sets organization name, time zone, workweek, and expected daily hours.
-- The service creates an owner membership and starts a trial or selected plan.
 - The organization supports a maximum of 20 active members in the initial product.
+- A person who belongs to one company enters it automatically after login.
+- A person who belongs to multiple companies sees a company list and chooses which one to open.
+- A person with no company sees invited-company actions and the paid Create company option.
 
 ### People and access
 
-- Owner/admin can invite, resend, deactivate, reactivate, and change roles for members.
+- Owner or an authorized person can invite, resend, deactivate, reactivate, and change allowed roles for members.
 - An invitation expires and can be revoked.
-- Deactivation prevents new sessions and clock actions but preserves historical records.
-- A person may eventually belong to multiple organizations; MVP UI may support one active organization at a time.
+- An invited person accepts the company invitation using the intended personal Google account.
+- Joining makes the person a company member but does not automatically approve the current device for attendance.
+- Deactivation prevents company access and clock actions but preserves historical records.
+- A person may belong to multiple companies and uses one selected company at a time.
+
+### Device onboarding and PTP
+
+- Every device is treated as a separate attendance device for a member within a company.
+- After accepting a company invitation, the member reaches a final device-onboarding step.
+- The owner, admin, or another role with device-approval rights provides or approves the PTP.
+- Successful PTP onboarding marks that specific device as approved for that member and company.
+- Installing or opening the application on another device requires a new device-onboarding approval, even for the same Google account.
+- A company can view approved and pending devices and revoke a device.
+- Revoking one device does not remove the member or automatically revoke their other approved devices.
+- Device approval can carry explicit permissions, initially Clock in and Clock out.
+- A device without the required permission can view allowed information but cannot perform the protected attendance action.
 
 ### Attendance
 
 - A member can clock in when no open attendance session exists.
 - A member can clock out only when an open session exists.
+- Clock in and clock out require the appropriate permission on the current approved device.
 - The product records a clear, authoritative time and displays it in the organization time zone.
 - Repeated taps must not create duplicate or contradictory attendance entries.
 - An open session may span midnight; policy determines how it is displayed and reported.
@@ -46,15 +65,22 @@ A company with 2–20 people can create an account, invite its team, record dail
 - Monthly CSV export includes organization, member, local date, clock-in, clock-out, duration, status, and correction indicator.
 - Totals are labelled “attendance duration,” not guaranteed payroll hours.
 
-### Subscription
+### Credits and payment
 
-- Owner can see plan, active-member usage, trial state, invoices/receipts where supported, and renewal state.
-- At limit, existing records remain accessible; adding or reactivating a member is blocked with a clear upgrade path.
-- Cancellation stops renewal but preserves access until the paid period ends.
+- Credits are the common payment unit for every paid capability in the application.
+- Credits may come from a recurring subscription, a one-time fixed purchase, a package, a trial, a promotion, or an administrative grant.
+- The owner can see available credits, reserved credits if used, upcoming charges, purchases, grants, consumption, reversals, expiry if applicable, and the reason for every balance change.
+- A subscription grants credits according to its recurring terms; it does not bypass the credit system.
+- A fixed-cost offer grants a defined amount of credits or consumes a defined amount for a capability.
+- Creating or continuing to manage a company consumes credits according to the active commercial rule.
+- The product checks and clearly displays the credit cost before a paid action is confirmed.
+- Insufficient credits never create a hidden charge or unclear partial result.
+- Existing attendance records remain available according to the agreed restricted-access and retention policy if credits run out.
+- Invited members do not need personal credits merely to join and use a company whose owner has funded it.
 
 ### Account and data controls
 
-- Users can change or reset passwords and revoke sessions.
+- Users access the product through their personal Google account and can sign out of product sessions.
 - Owner can export organization data.
 - Organization deletion uses a deliberate confirmation and retention workflow.
 
@@ -63,8 +89,12 @@ A company with 2–20 people can create an account, invite its team, record dail
 | Action | Owner | Admin/manager | Member |
 |---|---:|---:|---:|
 | Manage subscription/delete organization | Yes | No | No |
+| Buy, receive, or allocate company credits | Yes | No | No |
+| View company credit history | Yes | Optional view-only | No |
 | Manage organization settings | Yes | Optional | No |
-| Invite/deactivate members | Yes | Yes | No |
+| Invite/deactivate members | Yes | If granted | No |
+| Approve or revoke attendance devices | Yes | If granted | No |
+| Assign device permissions | Yes | If granted | No |
 | Review team attendance | Yes | Yes | No |
 | Approve corrections | Yes | Yes | No |
 | Clock own attendance | Yes | Yes | Yes |
@@ -75,17 +105,22 @@ The exact admin/manager role name is open.
 
 ## Core business rules
 
-1. A membership belongs to exactly one organization and all attendance access is scoped through it.
-2. One member can have at most one open attendance session per organization.
-3. The recorded time is authoritative and is displayed in the organization’s time zone.
-4. Attendance events are never silently overwritten.
-5. Deactivated users remain in historical reports.
-6. Paid member counts include active memberships and exclude pending invitations.
-7. Admins cannot view passwords, password hashes, recovery tokens, or device secrets.
+1. A Google account identifies a person; it does not by itself grant company membership or device permission.
+2. A membership connects a person to one company.
+3. Device approval is separate for each person, company, and device.
+4. A newly used device is pending until a company-authorized person completes PTP onboarding.
+5. Clock in and clock out are allowed only when the current device has the required company permission.
+6. One member can have at most one open attendance session per organization.
+7. Attendance events are never silently overwritten.
+8. Deactivated users and revoked devices remain in historical records.
+9. Invited members do not individually pay merely to join; company creation and management consume owner/company credits.
+10. Every credit addition or deduction has an amount, reason, time, and visible resulting balance.
+11. Credits are never deducted twice for one completed paid action.
+12. A failed or canceled action does not consume credits unless a clearly disclosed policy says otherwise.
 
 ## Experience and service requirements
 
-- Mobile-first responsive web experience
+- Easy installation and mobile-first experience
 - Common attendance actions feel immediate and always show confirmed or failed state
 - WCAG 2.2 AA target for key workflows
 - Customer records are protected, recoverable, and auditable
@@ -98,7 +133,6 @@ The exact admin/manager role name is open.
 - Employee scheduling and shift swaps
 - Leave management
 - Biometric recognition or continuous location tracking
-- Native mobile apps
 - Hardware time clocks
 - Public API and broad integrations
 - More than 20 active members per organization

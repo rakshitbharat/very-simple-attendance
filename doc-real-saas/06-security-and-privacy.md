@@ -10,10 +10,10 @@ Employees should trust that their attendance is accurate and cannot be changed s
 
 - People see only the companies and records they are permitted to see.
 - Employees can see their own attendance and correction history.
-- Sensitive access information is never visible to company administrators.
+- Personal Google-account access information is never visible to company administrators; authorized people see only what is needed to approve or revoke a company device.
 - Important changes identify who changed what, when, and why.
 - The product clearly distinguishes a confirmed action from an offline, pending, or failed action.
-- The product does not claim that a weak PIN or device check is complete security.
+- The product explains that PTP grants company attendance permission to a device; it is not a replacement for personal Google login.
 
 ## Privacy principles
 
@@ -54,7 +54,8 @@ The exact legal obligations depend on the launch market and require appropriate 
 ## Open trust questions
 
 - Which attendance disputes are most common in the target segment?
-- Is device or workplace verification actually required?
+- Should device approval require the approver and member to be together, or can it safely happen remotely?
+- What is the safe recovery path when all approved devices are lost?
 - Who is allowed to correct owner/manager attendance?
 - How long do businesses need historical records?
 - What should an employee retain access to after leaving?

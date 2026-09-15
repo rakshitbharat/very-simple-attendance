@@ -22,10 +22,12 @@ The POC is useful evidence that the basic interaction can work. It is **not prod
 8. [Delivery roadmap](08-delivery-roadmap.md) — validation-to-launch sequence.
 9. [Decisions and questions](09-decisions-and-questions.md) — decision log and brainstorming agenda.
 10. [Success and acceptance](10-success-and-acceptance.md) — product metrics and release gates.
+11. [Device onboarding and PTP](11-device-onboarding-and-ptp.md) — the central device-permission workflow.
+12. [Credit-based payments](12-credit-based-payments.md) — the flexible commercial system behind subscriptions and one-time purchases.
 
 ## Current baseline
 
-The repository contains a POC with employee clock-in/out, an attendance calendar, recent activity, PTP/device verification concepts, and admin user management. Its current documents often describe intended behavior rather than the exact demonstrated experience.
+The repository contains a POC with employee clock-in/out, an attendance calendar, recent activity, PTP/device verification concepts, and admin user management. The refined concept makes **paid company creation and management** the business model, **credits** the common payment layer, and **PTP-based approval of each device** the central attendance-control mechanism.
 
 ## Recommended next use
 

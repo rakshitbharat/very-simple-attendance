@@ -38,7 +38,7 @@ Reuse should be decided component by component. Existing behavior must not be as
 
 ## Important product trust lesson
 
-The current PTP idea creates visible friction but does not automatically create customer trust. Before keeping it, discovery must identify the real problem it solves: shared-device use, workplace-only attendance, account protection, or prevention of “buddy punching.” Each is a different customer need. The future solution should be selected only after that need is validated.
+The PTP is not a second login. Its product purpose is now defined as **company-controlled onboarding of each attendance device**. Personal Google login identifies the person, company membership grants entry to the company, and PTP approval grants attendance permission to that particular device. The remaining discovery work is to make the PTP exchange understandable, safe, and recoverable without weakening this separation.
 
 ## Feature reality map
 
